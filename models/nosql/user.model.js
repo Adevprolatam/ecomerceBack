@@ -7,11 +7,35 @@ const UserSchema = new mongoose.Schema(
         },
         email:{
             type:String,
-            unique: true
+            unique: true,
+            require: true
+        },
+        password:{
+            type:String,
+            require: true
         },
         role:{
-            type:["USER", "ADMIN"],
+            type:["USER", "ADMIN", "DEV"],
             default: "USER"
+        },
+        address:{
+            type:Object,
+        },
+        phone:{
+            type: String
+        },
+        profileUrl:{
+            type: String
+        },
+        transactions:{
+            type: String
+
+            //type: mongoose.Types.ObjectId,
+            //ref: 'transactions',
+            //required: false
+        }, 
+        config:{
+            type: String
         }
     },
     {
@@ -19,5 +43,5 @@ const UserSchema = new mongoose.Schema(
         versionKey: false,
     }
 )
-module.exports = mongoose.model("USER", UserSchema);
+module.exports = mongoose.model("users", UserSchema);
 

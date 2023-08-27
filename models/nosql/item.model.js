@@ -9,8 +9,12 @@ const ItemSchema = new mongoose.Schema(
             type:Number,
             default: 0
         },
-        images:{
+        description:{
             type:String,
+            default: "No description"
+        },
+        images:{
+            type:Object,
         },
         banner:{
             type:String,
@@ -20,8 +24,8 @@ const ItemSchema = new mongoose.Schema(
             default:true
         },
         createdBy:{
-            type: Schema.Types.ObjectId,
-            ref: 'USER',
+            type: mongoose.Types.ObjectId,
+            ref: 'users',
             required: true
         },
         category:{
@@ -42,5 +46,5 @@ const ItemSchema = new mongoose.Schema(
         versionKey: false,
     }
 )
-module.exports = mongoose.model("ITEM", ItemSchema);
+module.exports = mongoose.model("items", ItemSchema);
 
