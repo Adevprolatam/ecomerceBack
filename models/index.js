@@ -1,5 +1,5 @@
 const models = {
-     userModel:require('./user.model')
+     userModel:require('./nosql/user.model')
 }
 
 module.exports = models;
