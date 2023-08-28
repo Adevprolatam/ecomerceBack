@@ -18,9 +18,7 @@ const createFactura = async (req,res)=>{
    //const itemIds = ["64ebc360100fe12da2ba273b", "64ebc5e2fefda8cfb1453662"]; // IDs de los productos
     try {
 
-            const factura = await facturaModel();
-
-
+            const factura = await facturaModel();                        
             //Buscar Producto ID
             const items = await itemModel.find({ _id: { $in: _uid } });
             //console.log("Productos encontrados:", items);
@@ -46,17 +44,16 @@ const createFactura = async (req,res)=>{
             factura.nItems = count;
             await factura.save();
 
-            res.json({
-                code: "200",
-                ok: true,
-                factura: factura
-            });
+
 
             console.log("Valores de 'value':", values);
             console.log("SUBTOTAL':", subtotal);
             console.log("TOTAL':", total);
-
-
+            res.json({
+                code:"200",
+                ok:true,
+                factura: factura
+            })
     } catch (error) {
         console.error(error);
         res.status(500).json({
@@ -65,6 +62,36 @@ const createFactura = async (req,res)=>{
             error: "Error al calcular la factura"
         });
     }
+}
+
+const sendFactura = ()=>{
+    const doc = new PDFDocument();
+
+    // Agregar contenido al PDF
+    doc.fontSize(14).text('Factura', { align: 'center' });
+    doc.text('-----------------------------');
+
+    doc.fontSize(12).text(`Cliente: ${cliente.name}`);
+    doc.text('Productos:');
+    items.forEach(item => {
+        doc.text(`${item.nameProduct}: $${item.value}`);
+    });
+    doc.text(`Subtotal: $${subtotal}`);
+    doc.text(`Total: $${total}`);
+
+    // Generar el PDF y guardarlo en una ubicación temporal
+    const pdfPath = path.join(__dirname, 'factura.pdf');
+    doc.pipe(fs.createWriteStream(pdfPath));
+    doc.end();
+
+    // Enviar el archivo PDF como respuesta
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=factura.pdf');
+    fs.createReadStream(pdfPath).pipe(res);
+
+    // Eliminar el archivo temporal después de enviarlo
+    fs.unlinkSync(pdfPath);
+
 }
 
 
