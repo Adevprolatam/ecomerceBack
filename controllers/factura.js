@@ -1,10 +1,11 @@
+const Decimal = require('decimal.js');
 const {facturaModel, itemModel} = require('../models/index');
 
 const getFactoryAll = async (req,res)=>{
     const {body} = req;
     const data = await facturaModel.find()
         .populate("cliente",'name email')
-        .populate("items",'nameProduct description value category')
+        //.populate("items",'nameProduct description value category')    
     res.json({
         code:"200",
         ok:true,
@@ -27,17 +28,17 @@ const createFactura = async (req,res)=>{
             const count = await itemModel.countDocuments({ _id: { $in: _uid } });
             
             //obtener valores de productos
-            const values = items.map(item => item.value);
+            const values = items.map(item => new Decimal(item.value));
         
             // Calcular el subtotal sumando los valores de los productos
-            const subtotal = values.reduce((total, value) => total + value, 0);
-        
+            const subtotal = values.reduce((total, value) => total.plus(value), new Decimal(0));
+
             // Calcular el total sumando el impuesto al subtotal
-            const total = subtotal * (1 + factura.tax);
+            const total = subtotal.times(new Decimal(1).plus(factura.tax));
           
 
-            factura.subtotal = subtotal;
-            factura.total = total;
+            factura.subtotal = subtotal.toString();
+            factura.total = total.toString();
             factura.items = items;
             factura.cliente = cliente;
             factura.methodPay  = methodPay;
