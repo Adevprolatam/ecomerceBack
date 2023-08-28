@@ -30,6 +30,10 @@ const FacturaSchema = new mongoose.Schema(
         dueDate: {
             type: Date
         },
+        nItems:{
+            type: Number,
+            default: 0
+        }
     },
     {
         timestamps: true,
